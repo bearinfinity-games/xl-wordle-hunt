@@ -1,0 +1,26 @@
+.tile {
+    border: 2px solid rgb(146, 143, 143);
+    border-radius: 5px;
+    margin: 2px 3px;
+    display: inline-flex;
+    align-items: center;        /*centre vertically*/
+    justify-content: center;    /*centre horizontally*/
+    width: 50px;
+    height: 50px;
+}
+
+.active {
+    border-color: white;
+}
+
+.green {
+    background-color: lightgreen;
+}
+
+.orange {
+    background-color: rgb(145, 96, 7);
+}
+
+.grey {
+    background-color: rgb(83, 83, 83);
+}
