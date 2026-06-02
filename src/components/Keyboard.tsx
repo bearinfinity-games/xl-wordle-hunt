@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import {Row, Tile} from './Tiles';
-import {WordleContext} from './WordleContext'
+import {WordleContext} from '../context/WordleContext'
 import { Action } from 'rxjs/internal/scheduler/Action';
 const KEY_STRINGS: string[] = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 const CTRL_KEYS: string[] = ["Back", "Enter"];
@@ -15,13 +15,11 @@ function KeyboardButton({label, onClick} : KeyboardProps){
     return <button className={`button ${keyStyle[label]}`} onClick={onClick}>{label}</button>;
 }
 function Keyboard() {
-    const {activeTile, setActiveTile, setNewKey, setSubmitted, keyStyle} = useContext(WordleContext)
+    const {difficulty, activeTile, setActiveTile, setNewKey, setSubmitted, keyStyle} = useContext(WordleContext)
 
     const handleClick = (KEY: string) => {
-        //e.PreventDefault
-        //document.getElementById("activeTile").innerHTML = 'K'
         setNewKey(KEY);
-        //setActiveTile(`tile${9}`)
+        //setActiveTile(`tile${activeTile}`)
 
     }
     const submitTrial = () => {
@@ -29,7 +27,7 @@ function Keyboard() {
     }
 
     const clear = ()=> {
-        activeTile % 5? setActiveTile(activeTile-1): {}
+        activeTile % (difficulty+2)? setActiveTile(activeTile-1): {}
     }
     return (
         <div>

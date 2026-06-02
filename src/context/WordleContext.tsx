@@ -10,17 +10,21 @@ type WordleContextType = {
     setSubmitted: React.Dispatch<React.SetStateAction<boolean>>;
     setWordle: React.Dispatch<React.SetStateAction<string>>;
     keyStyle: Record<string, string>;
+    difficulty: number;
+    setDifficulty: React.Dispatch<React.SetStateAction<number>>;
 }
 const WordleContext = createContext<WordleContextType>(undefined)
 function WordleContextProvider({children}: any) {
-    const [activeTile, setActiveTile] = useState(0)
-    const [newKey, setNewKey] = useState('')
-    const [currentGuess, setCurrentGuess] = useState(Array(5).fill(''))
-    const [tip, setTip] = useState('Tap key to Wordle!');
+    const [activeTile, setActiveTile] = useState(0);
+    const [newKey, setNewKey] = useState('');
+    const levels: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const [difficulty, setDifficulty] = useState(levels[Math.floor(Math.random()*levels.length)]);
+    const [currentGuess, setCurrentGuess] = useState(Array(difficulty+2).fill(''))
+    const [tip, setTip] = useState('Tap key to find ME!');
     const [submitted, setSubmitted] = useState(false);
     const [wordle, setWordle] = useState('');
     let initialKeyHistory: Record<number, Record<string, string>> = {}
-    for (let i:number = 0; i<30; i++){
+    for (let i:number = 0; i<((difficulty+2)*(difficulty+3)); i++){
         initialKeyHistory[i] = {item: '', color: ''};
     }
     const [keyHistory, setKeyHistory] = useState(initialKeyHistory)
@@ -37,9 +41,9 @@ function WordleContextProvider({children}: any) {
             //setTip('Press Enter to submit.');
         }else if(newKey){
             keyHistory[activeTile].item = newKey;
-            currentGuess[activeTile % 5] = newKey;
+            currentGuess[activeTile % (difficulty+2)] = newKey;
             //console.log(keyHistory)
-            if(activeTile % 5 == 4){
+            if(activeTile % (difficulty+2) == (difficulty+1)){
                 setActiveTile(-1);
                 setTip('Press Enter to submit.');
 
@@ -48,7 +52,7 @@ function WordleContextProvider({children}: any) {
             }else{
                 setActiveTile(newKey? activeTile+1 : 0);
             }
-            currentGuess[activeTile % 5] = newKey;
+            currentGuess[activeTile % (difficulty+2)] = newKey;
             setNewKey('');
         }
                 
@@ -56,32 +60,31 @@ function WordleContextProvider({children}: any) {
 
         //setKeyHistory(enteredKeys)
         //console.log(guessedLetters[activeTile])
-        //document.getElementById(activeTile)?.style.className = "tile active" 
     }, [newKey])
 
     useEffect(() => {
         if (submitted) {
             for(let i:number=0; i<currentGuess.length; i++){
                 if (currentGuess[i] == wordle[i]) {
-                    keyHistory[(trial-1)*5 + i]?  keyHistory[(trial-1)*5 + i].color = 'green': {};
+                    keyHistory[(trial-1)*(difficulty+2) + i]?  keyHistory[(trial-1)*(difficulty+2)+ i].color = 'green': {};
 
                 }else if (wordle.includes(currentGuess[i])) {
-                    keyHistory[(trial-1)*5 + i]? keyHistory[(trial-1)*5 + i].color = 'orange': {};
+                    keyHistory[(trial-1)*(difficulty+2) + i]? keyHistory[(trial-1)*(difficulty+2) + i].color = 'orange': {};
                 }else{
-                    keyHistory[(trial-1)*5 + i]? keyHistory[(trial-1)*5 + i].color = 'grey': {};
+                    keyHistory[(trial-1)*(difficulty+2) + i]? keyHistory[(trial-1)*(difficulty+2) + i].color = 'grey': {};
                     keyStyle[currentGuess[i]] = 'grey';
 
                 }
             }
-            activeTile == -1? setActiveTile(trial*5 + activeTile+1): {};
+            activeTile == -1? setActiveTile(trial*(difficulty+2) + activeTile+1): {};
             setSubmitted(false);
             if (currentGuess.join('') == wordle){
                 setTip('Congratulations, You Won!');
                 setActiveTile(-1)
-            }else if (trial == 6){
-                setTip('Oops, you lost. Refresh to try again!');
+            }else if (trial == (difficulty+3)){
+                setTip(`Oops, you lost. Here I am: "${wordle}". Refresh Me to try again!`);
             }else{
-                setTip('Tap key to Wordle!')
+                setTip('Tap key to find ME!')
             }            
         }
 
@@ -97,6 +100,8 @@ function WordleContextProvider({children}: any) {
         setSubmitted,
         setWordle,
         keyStyle,
+        difficulty,
+        setDifficulty,
     }
 
     return <WordleContext.Provider value={values}>
