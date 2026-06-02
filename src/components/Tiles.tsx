@@ -1,6 +1,6 @@
 import type {ComponentType} from 'react';
 import {useContext} from 'react';
-import {WordleContext} from './WordleContext';
+import {WordleContext} from '../context/WordleContext';
 
 interface SizeProps {
     rows: number;
@@ -23,13 +23,14 @@ interface TileProps {
     item: string;
 }
 
-function Puzzle({trials}: PuzzleProps) {
-    const tiles: any [] = Array(trials).fill(null);
+function Puzzle() {
+    const {difficulty} = useContext(WordleContext);
+    const tiles: any [] = Array(difficulty+3).fill(null);
     return(
     <div>
         {
             tiles.map((_, index) => {
-                const rowItems: TileProps[] = Array(5).fill({item: ''})
+                const rowItems: TileProps[] = Array(difficulty+2).fill({item: ''})
                 return <Row key={index} loc={index} size={rowItems.length} items={rowItems} Component={Tile}></Row>
             })
         }
